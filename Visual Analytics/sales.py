@@ -3,7 +3,7 @@ import glob
 import os
 import matplotlib.pyplot as plt
 
-file_paths = glob.glob(os.path.join('/Users/lucadutu/PycharmProjects/Programming for AI/Cleaning Data ', 'sales_*.csv'))
+file_paths = glob.glob(os.path.join('Data', 'sales_*.csv'))
 sales_dfs = [pd.read_csv(file) for file in file_paths]
 sales_df = pd.concat(sales_dfs, ignore_index=True)
 print("Combined DataFrame head:")
