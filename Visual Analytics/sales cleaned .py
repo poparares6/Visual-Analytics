@@ -3,39 +3,11 @@ import glob
 import os
 import matplotlib.pyplot as plt
 
-#list all files in the directory
-print("All files in directory:", os.listdir('../../../../Downloads'))
+file_paths = glob.glob(os.path.join('Data', 'sales_*.csv'))
+sales_dfs = [pd.read_csv(file) for file in file_paths]
+sales_df = pd.concat(sales_dfs, ignore_index=True)
 
-#search for CSV files
-file_paths = glob.glob('*.csv')
-print("Matched files:", file_paths)
-
-#initialize an empty list to store DataFrames
-sales_dfs = []
-
-#attempt to read each file
-for file in file_paths:
-    try:
-        df = pd.read_csv(file)
-        print(f"Loaded {file} with {len(df)} rows.")  # Debugging
-        sales_dfs.append(df)
-    except Exception as e:
-        print(f"Error reading {file}: {e}")  # Print error for debugging
-
-#combine all DataFrames
-if sales_dfs:
-    sales_df = pd.concat(sales_dfs, ignore_index=True)
-    print(f"Successfully loaded {len(sales_dfs)} files.")
-    print(sales_df.head())
-else:
-    print("No valid files were loaded. Please check file paths or contents.")
-
-#processing
-if 'Transaction Date' in sales_df.columns:
-    sales_df['Transaction Date'] = pd.to_datetime(sales_df['Transaction Date'], errors='coerce')
-    print("Unique Dates:", sales_df['Transaction Date'].unique())
-else:
-    print("Transaction Date column is missing.")
+sales_df['Transaction Date'] = pd.to_datetime(sales_df['Transaction Date'], errors='coerce')
 
 columns_to_drop = [
     'Base Plan ID', 'Offer ID', 'Order Number', 'Order Charged Date',
@@ -51,19 +23,6 @@ sales_df = sales_df.dropna(subset=['Description'])
 
 # Reset the index to ensure it's clean after row deletion
 sales_df.reset_index(drop=True, inplace=True)
-
-# Verify the result
-print(f"Number of rows after dropping rows with empty 'Description': {len(sales_df)}")
-
-
-#ensure Transaction Date is present and in datetime format
-if 'Transaction Date' in sales_df.columns:
-    sales_df['Transaction Date'] = pd.to_datetime(sales_df['Transaction Date'], errors='coerce')
-    print("Transaction Date (first few values):")
-    print(sales_df['Transaction Date'].head())
-else:
-    print("Error: Transaction Date column is missing.")
-    raise KeyError("Transaction Date column is missing from the DataFrame.")
 
 #create Month column from Transaction Date
 sales_df['Month'] = sales_df['Transaction Date'].dt.to_period('M')
@@ -178,5 +137,3 @@ plt.xlabel('Total Amount (EUR)')
 plt.ylabel('SKU Id')
 plt.tight_layout()
 plt.show()
-
-sales_df.to_excel('cleaned_sale.xlsx', index=False)
