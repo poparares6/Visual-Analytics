@@ -9,4 +9,4 @@ The notebook contains the full analytics split into 4 parts:
 * Ratings and Stability
 * Geographical Development
 ### Dashboard
-All of these visualizations are displayed in the Dashboard.html file 
+All of these visualizations are displayed in the Dashboard.html file
